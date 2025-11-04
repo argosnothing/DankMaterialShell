@@ -37,7 +37,7 @@ in {
     options.programs.dankMaterialShell.greeter = {
         enable = lib.mkEnableOption "DankMaterialShell greeter";
         compositor.name = lib.mkOption {
-            type = types.enum ["niri" "hyprland" "sway"];
+            type = types.enum ["niri" "hyprland" "sway" "mango"];
             description = "Compositor to run greeter in";
         };
         compositor.customConfig = lib.mkOption {
