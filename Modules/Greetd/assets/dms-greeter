@@ -204,22 +204,7 @@ SWAY_EOF
         exec sway -c "$COMPOSITOR_CONFIG"
         ;;
     mango)
-        if [[ -z "$COMPOSITOR_CONFIG" ]]; then
-            TEMP_CONFIG=$(mktemp)
-            cat > "$TEMP_CONFIG" << MANGO_EOF
-exec = sh -c "$QS_CMD; pkill -TERM mango"
-MANGO_EOF
-            COMPOSITOR_CONFIG="$TEMP_CONFIG"
-        else
-            TEMP_CONFIG=$(mktemp)
-            cat "$COMPOSITOR_CONFIG" > "$TEMP_CONFIG"
-            cat >> "$TEMP_CONFIG" << MANGO_EOF
-
-exec = sh -c "$QS_CMD; pkill -TERM mango"
-MANGO_EOF
-            COMPOSITOR_CONFIG="$TEMP_CONFIG"
-        fi
-        exec mango -c "$COMPOSITOR_CONFIG"
+        exec mango -s "sh -c \"$QS_CMD\""
         ;;
     *)
         echo "Error: Unsupported compositor: $COMPOSITOR" >&2
