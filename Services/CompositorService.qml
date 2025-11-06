@@ -500,6 +500,7 @@ Singleton {
     }
 
     function checkForDwl() {
+        isDwl = true
         if (DMSService.apiVersion >= 12 && DMSService.capabilities.includes("dwl")) {
             isHyprland = false
             isNiri = false
