@@ -370,7 +370,8 @@ Singleton {
         try {
             const tags = DwlService.getActiveTags(outputName) || []
             return tags.reduce((m, t) => (m | (1 << t)), 0)
-        } catch {
+        } catch(e) {
+            console.warn("filterDwlCurrentTagsSafe failed:", e)
             return 0
         }
     }
