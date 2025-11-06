@@ -327,7 +327,52 @@ Singleton {
     function filterCurrentWorkspace(toplevels, screen) {
         if (useNiriSorting) return NiriService.filterCurrentWorkspace(toplevels, screen)
         if (isHyprland) return filterHyprlandCurrentWorkspaceSafe(toplevels, screen)
+        if (isDwl) return filterDwlCurrentTagsSafe(toplevels, screen)
         return toplevels
+    }
+
+    function filterDwlCurrentTagsSafe(toplevels, outputName) {
+        try {
+            if (!toplevels || !toplevels.length || !DwlService?.dwlAvailable) return toplevels
+
+            const out = outputName || DwlService.activeOutput || ""
+            const activeMask = dwlActiveMask(out)
+            if (!activeMask) return toplevels 
+            if (DwlService.clientTagMasks && typeof DwlService.clientTagMasks.get === "function") {
+                return toplevels.filter(w => {
+                    const m = DwlService.clientTagMasks.get(w)
+                    return typeof m === "number" && (m & activeMask) !== 0
+                })
+            }
+            const outState = DwlService.getOutputState(out)
+            if (outState && Array.isArray(outState.clients)) {
+                const map = new Map()
+                for (const c of outState.clients) {
+                    const wid = c?.wayland
+                    const m   = typeof c?.tagmask === "number" ? c.tagmask : 0
+                    if (wid && m) map.set(wid, m)
+                }
+                if (map.size) {
+                    return toplevels.filter(w => {
+                        const m = map.get(w)
+                        return typeof m === "number" && (m & activeMask) !== 0
+                    })
+                }
+            }
+            return toplevels
+        } catch (e) {
+            console.warn("filterDwlCurrentTagsSafe failed:", e)
+            return toplevels
+        }
+    }
+
+    function dwlActiveMask(outputName) {
+        try {
+            const tags = DwlService.getActiveTags(outputName) || []
+            return tags.reduce((m, t) => (m | (1 << t)), 0)
+        } catch {
+            return 0
+        }
     }
 
     function filterHyprlandCurrentWorkspaceSafe(toplevels, screenName) {
