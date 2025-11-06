@@ -204,7 +204,7 @@ SWAY_EOF
         exec sway -c "$COMPOSITOR_CONFIG"
         ;;
     mango)
-        exec dbus-run-session -- mango -s "sh -c \"$QS_CMD\""
+        exec mango -s "sh -c \"$QS_CMD\""
         ;;
     *)
         echo "Error: Unsupported compositor: $COMPOSITOR" >&2
